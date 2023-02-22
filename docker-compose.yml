@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  domainprobe-wbe:
+    build: .
+    image: domainprobe-wbe:0.1
+    container_name: domainprobe-wbe
+    restart: always
+    ports:
+      - ${LISTEN_PORT}:${LISTEN_PORT}
+    environment:
+      - LISTEN_ADDR=${LISTEN_ADDR}
+      - LISTEN_PORT=${LISTEN_PORT}
+      - APP_DEBUG=${APP_DEBUG}
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_NAME=${MONGODB_NAME}
+      - REDIS_URI=${REDIS_URI}
+      - HTTPX_BIN=${HTTPX_BIN}
+      - DNSX_BIN=${DNSX_BIN}
+      - SUBFINDER_BIN=${SUBFINDER_BIN}
+    network_mode: "bridge"
