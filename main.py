@@ -103,8 +103,8 @@ def RedisCacheClear():
 					logger.info('{} has deleted from cache'.format(str(key)))
 		time.sleep(60)
 
-@app.route('/api/domainprobe/subdomain/<host>', methods=['GET'])
-def domainprobesubdomain(host):
+@app.route('/api/subdomain/scan/<host>', methods=['GET'])
+def subdomain_scan(host):
 	try:
 		keyname = 'subdomains'
 		get_redis = redis_connect.hget(keyname + ':time', host)
@@ -123,8 +123,28 @@ def domainprobesubdomain(host):
 		logger.error(traceback.format_exc())
 		return {'error': 500, 'message': 'unknown error'}, 500
 
-@app.route('/api/domainprobe/probe/<host>', methods=['GET'])
-def domainprobescan(host):
+@app.route('/api/subdomain/result/<host>', methods=['GET'])
+def subdomain_result(host):
+	try:
+		data = mongodb['subdomain'].find({'main': host}, {'main': False, 'updated_on': False})
+		data = [ row['_id'] for row in data ]
+		return jsonify(list(data)), 200
+	except Exception:
+		logger.error(traceback.format_exc())
+		return {'error': 500, 'message': 'unknown error'}, 500
+
+@app.route('/api/subdomain/list', methods=['GET'])
+def subdomain_list():
+	try:
+		data = mongodb['subdomain'].find({}, {'_id': True, 'updated_on': False, 'data': False})
+		data = [ row['_id'] for row in data ]
+		return jsonify(list(data)), 200
+	except Exception:
+		logger.error(traceback.format_exc())
+		return {'error': 500, 'message': 'unknown error'}, 500
+
+@app.route('/api/domainprobe/scan/<host>', methods=['GET'])
+def domainprobe_scan(host):
 	try:
 		keyname = 'domprobcache'
 		get_redis = redis_connect.hget(keyname + ':time', host)
@@ -141,14 +161,24 @@ def domainprobescan(host):
 		logger.error(traceback.format_exc())
 		return {'error': 500, 'message': 'unknown error'}, 500
 
-@app.route('/api/domainprobe/domains', methods=['GET'])
-def domainprobedomains():
+@app.route('/api/domainprobe/result/<host>', methods=['GET'])
+def domainprobe_result(host):
 	try:
-		data = mongodb['subdomain'].find({}, {'_id': True, 'updated_on': False, 'data': False})
-		data = [ row['_id'] for row in data ]
-		return jsonify(list(data)), 200
+		data = mongodb['domainprobe'].find_one({"_id": host})
+		return jsonify(data), 200
 	except Exception:
 		logger.error(traceback.format_exc())
+		return {'error': 500, 'message': 'unknown error'}, 500
+
+@app.route('/api/domainprobe/list', methods=['GET'])
+def domainprobe_list():
+	try:
+		data = mongodb['domainprobe'].find({}, {'_id': True, 'updated_on': False, 'data': False})
+		data = [ row['_id'] for row in data ]
+		return jsonify(data), 200
+	except Exception:
+		logger.error(traceback.format_exc())
+		return {'error': 500, 'message': 'unknown error'}, 500
 
 if __name__ == '__main__':
 	requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

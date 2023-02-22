@@ -23,19 +23,34 @@ This environment will run at port `5002` with these endpoints below.
 
 #### Active scan
 
-1. Subdomain discovery
+1. Subdomain scan
 ```
-/api/domainprobe/subdomain/<host>
-```
-
-2. Domain probing (DNS & HTTP)
-```
-/api/domainprobe/probe/<host>
+GET /api/subdomain/scan/<host>
 ```
 
-3. Get all discovered domains
+2. Get the result of subdomain
 ```
-/api/domainprobe/domains
+GET /api/subdomain/result/<host>
+```
+
+3. List all subdomains
+```
+GET /api/subdomain/list
+```
+
+4. Domainprobe scan
+```
+GET /api/domainprobe/scan/<host>
+```
+
+5. Domainprobe result
+```
+GET /api/domainprobe/result/<host>
+```
+
+6. List of discovered domains 
+```
+GET /api/domainprobe/list
 ```
 
 ## F.A.Q
