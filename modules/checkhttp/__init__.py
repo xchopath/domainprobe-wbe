@@ -4,9 +4,23 @@
 # httpcheck = CheckHTTP('example.com')
 
 from modules.logging import *
+from urllib.parse import urlparse
 import subprocess
 import json
 import os
+
+def HTTPParse(DOMAIN):
+	try:
+		target = urlparse(DOMAIN)
+		if target.scheme == 'http' and target.port == 80:
+			target = target.scheme + '://' + target.hostname
+		elif target.scheme == 'https' and target.port == 443:
+			arget = target.scheme + '://' + target.hostname
+		else:
+			target = target.scheme + '://' + target.netloc
+		return target
+	except:
+		return None
 
 def CheckHTTP(DOMAIN):
 	try:
@@ -27,7 +41,7 @@ def CheckHTTP(DOMAIN):
 				except:
 					content_type = None
 					pass
-				data_parsed = {'url': data['url'], 'status_code': data['status_code'], 'host': data['host'], 'port': data['port'], 'content_type': content_type, 'technologies': tech}
+				data_parsed = {'url': HTTPParse(data['url']), 'status_code': data['status_code'], 'host': data['host'], 'port': data['port'], 'content_type': content_type, 'technologies': tech}
 				result.append(data_parsed)
 		if result == []:
 			return False
