@@ -20,3 +20,6 @@ services:
       - DNSX_BIN=${DNSX_BIN}
       - SUBFINDER_BIN=${SUBFINDER_BIN}
     network_mode: "bridge"
+    volumes:
+      - .:/app
+    entrypoint: ["python3", "/app/main.py"]
