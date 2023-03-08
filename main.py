@@ -114,6 +114,8 @@ def subdomain_scan(host):
 			return jsonify(list(data)), 200
 		subdomains = SubdomainFind(host)
 		current_time = int(time.time())
+		data = {'_id': host, 'host': host, 'updated_on': datetimenow()}
+		mongodb['subdomain_list'].update_one({"_id": host}, {"$set": data}, upsert=True)
 		data_upserts = [ {'_id': hit, 'main': host, 'updated_on': datetimenow()} for hit in subdomains ]
 		upserts = [ UpdateOne({'_id': row['_id']}, {'$setOnInsert': row}, upsert=True) for row in data_upserts ]
 		mongodb['subdomain'].bulk_write(upserts)
@@ -136,7 +138,7 @@ def subdomain_result(host):
 @app.route('/api/subdomain/list', methods=['GET'])
 def subdomain_list():
 	try:
-		data = mongodb['subdomain'].find({}, {'_id': True, 'updated_on': False, 'data': False})
+		data = mongodb['subdomain_list'].find({}, {'_id': True, 'updated_on': False, 'data': False})
 		data = [ row['_id'] for row in data ]
 		return jsonify(list(data)), 200
 	except Exception:
