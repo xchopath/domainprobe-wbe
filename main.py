@@ -154,6 +154,8 @@ def domainprobe_scan(host):
 			data = mongodb['domainprobe'].find_one({"_id": host})
 			return jsonify(data), 200
 		domainprobe = DomainProbe(host)
+		if domainprobe['dns'] == None:
+			return {'error': 404, 'host': host, 'message': 'there is no dns record'}, 404
 		current_time = int(time.time())
 		data = {'_id': host, 'data': domainprobe, 'updated_on': datetimenow()}
 		redis_connect.hset(keyname + ':time', host, current_time)

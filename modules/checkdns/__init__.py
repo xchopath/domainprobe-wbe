@@ -19,8 +19,8 @@ def CheckDNS(DOMAIN):
 		del data['resolver']
 		del data['all']
 		if data == None:
-			return False
+			return None
 		return data
 	except Exception:
 		logger.error(traceback.format_exc())
-		return False
+		return None
